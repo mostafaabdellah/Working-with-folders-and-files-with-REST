@@ -141,7 +141,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AzureAdSetting.cs" />
-    <Compile Include="RestAPI.cs" />
     <Compile Include="BatchProgram.cs" />
     <Compile Include="Models\SharePointListItemTitle.cs" />
     <Compile Include="ODataHelpers\ODataRequest.cs" />

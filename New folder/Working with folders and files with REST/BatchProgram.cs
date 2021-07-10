@@ -15,17 +15,16 @@ namespace Working_with_folders_and_files_with_REST
     {
         private const long GBSize = 1073741824;
         private const long MaxMessageSize = 10*GBSize;
-        private const int TotalThreads = 50;
-        static int MaxThreads = 4;
-        private const int MaxBatch = 100;
-        private const string FileName = "_api/web/GetFileByServerRelativeUrl('/Shared Documents/1GB.zip')/$value";
+        private const int TotalThreads = 1;
+        static int MaxThreads = 1;
+        private const int MaxBatch = 1;
+        private const string FileName = "/_api/web/GetFileByServerRelativeUrl('/sites/DataSite/Shared Documents/2.4GB.zip')/$value";
         static string AccessToken;
         static Stopwatch stopWatch = new Stopwatch();
         static int TotalFiles = 0;
         private const string DownloadPath = @"c:\temp\BatchFiles1MB\";
         static void Main(string[] args)
         {
-            AccessToken = GetTokenAsync().Result;
             stopWatch.Start();
             Console.WriteLine(DateTime.Now);
 
@@ -79,11 +78,10 @@ namespace Working_with_folders_and_files_with_REST
             Int16 listRetrievalCount = 0;
 
             // Get the host web's URL.
-            sharepointUrl = new Uri("https://mmoustafa.sharepoint.com");
+            sharepointUrl = new Uri("https://mmoustafa.sharepoint.com/sites/DataSite");
 
             // Create the parent request
-            string baseServiceUrl = String.Format("{0}/_api/", sharepointUrl);
-            var batchRequest = new BatchODataRequest(baseServiceUrl); // ctor adds "$batch"
+            var batchRequest = new BatchODataRequest(String.Format("{0}/_api/", sharepointUrl)); // ctor adds "$batch"
             batchRequest.SetHeader("Authorization", "Bearer " + AccessToken);
 
             using (var oDataMessageWriter = new ODataMessageWriter(batchRequest))
@@ -92,8 +90,7 @@ namespace Working_with_folders_and_files_with_REST
                 oDataBatchWriter.WriteStartBatch();
                 //listRetrievalCount++;
                 //https://mmoustafa.sharepoint.com/sites/DataSite/_api/web/GetFileByServerRelativeUrl('/sites/DataSite/Shared Documents/00002 sample1.docx')/$value
-                //Uri endpointUri = new Uri(sharepointUrl.ToString() + FileName);//1.3mb
-                Uri endpointUri = new Uri("https://mmoustafa.sharepoint.com/_api/web/LastItemModifiedDate");//1.3mb
+                Uri endpointUri = new Uri(sharepointUrl.ToString() + FileName);//1.3mb
                 for (int i = 0; i < MaxBatch; i++)
                 {
                     oDataBatchWriter.CreateOperationRequestMessage(
@@ -143,7 +140,7 @@ namespace Working_with_folders_and_files_with_REST
                                 // Response's ATOM markup parsing and presentation section
                                 using (var stream = operationResponse.GetStream())
                                 {
-                                    string path = Path.Combine($"{DownloadPath}", $"Batch{batchId:D3}file{counter:D3}.txt");
+                                    string path = Path.Combine($"{DownloadPath}", $"Batch{batchId:D3}file{counter:D3}.docx");
                                     try
                                     {
                                         using (FileStream outputFileStream = new FileStream(path, FileMode.Create))
